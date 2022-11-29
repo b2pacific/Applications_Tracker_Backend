@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { MONGO_URL } = require("../utils/constants");
 
 if (process.env.NODE_ENV == "development") {
   exports.conn = mongoose.connect(
@@ -15,7 +16,7 @@ if (process.env.NODE_ENV == "development") {
   );
 } else {
   exports.conn = mongoose.connect(
-    process.env.MONGO_URL,
+    MONGO_URL,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
