@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET_KEY } = require("../utils/constants");
+const { JWT_SECRET_KEY, ACCESS_TOKEN_EXPIRY } = require("../utils/constants");
 
 const userSchema = mongoose.Schema(
   {
@@ -26,7 +26,9 @@ const userSchema = mongoose.Schema(
 
 userSchema.methods.generateToken = (cb, user) => {
   // let admin = this;
-  let token = jwt.sign({ id: user._id.toHexString() }, JWT_SECRET_KEY);
+  let token = jwt.sign({ id: user._id.toHexString() }, JWT_SECRET_KEY, {
+    expiresIn: ACCESS_TOKEN_EXPIRY,
+  });
 
   return cb(null, token);
 };
@@ -34,7 +36,6 @@ userSchema.methods.generateToken = (cb, user) => {
 userSchema.statics.findByToken = (token, Users, cb) => {
   jwt.verify(token, JWT_SECRET_KEY, function (err, decode) {
     if (err) {
-      console.log(err);
       if (err.name === "TokenExpiredError") return cb("Token Expired");
       else if (err.message === "jwt malformed") return cb("Token Malformed");
       else if (err.message === "jwt signature is required")
