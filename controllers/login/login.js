@@ -4,6 +4,12 @@ const { httpStatus500, httpStatus200 } = require("../../utils/httpResponse");
 
 const Crypto = require("crypto");
 
+const jwt = require("jsonwebtoken");
+
+const {
+  JWT_SECRET_KEY,
+  REFRESH_TOKEN_EXPIRY,
+} = require("../../utils/constants");
 const { GOOGLE_CLIENT_ID } = require("../../utils/constants");
 
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -18,9 +24,11 @@ const login = async (req, res) => {
         audience: GOOGLE_CLIENT_ID,
       });
 
-      console.log(resp.payload);
+      const randBytes = Crypto.randomBytes(32).toString("hex");
 
-      const refreshToken = Crypto.randomBytes(32).toString("hex");
+      const refreshToken = jwt.sign({ token: randBytes }, JWT_SECRET_KEY, {
+        expiresIn: REFRESH_TOKEN_EXPIRY,
+      });
 
       if (resp.payload.email) {
         const user = await User.findOne({ email: resp.payload.email });
@@ -30,7 +38,7 @@ const login = async (req, res) => {
             if (err) {
               return res.status(500).json(httpStatus500());
             } else {
-              user.refreshToken = refreshToken;
+              user.refreshToken = randBytes;
               await user.save();
               return res
                 .status(200)
