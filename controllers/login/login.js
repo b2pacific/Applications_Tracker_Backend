@@ -42,7 +42,12 @@ const login = async (req, res) => {
               await user.save();
               return res
                 .status(200)
-                .json({ refreshToken: refreshToken, accessToken: token });
+                .json(
+                  httpStatus200(
+                    { refreshToken: refreshToken, accessToken: token },
+                    "User Logged In"
+                  )
+                );
             }
           }, user);
         } else {
@@ -79,8 +84,7 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Token Missing", success: false });
     }
   } catch (err) {
-    console.log(err);
-    return res.status(401).json({ message: "Invalid Token", success: false });
+    return res.status(500).json(httpStatus500());
   }
 };
 
