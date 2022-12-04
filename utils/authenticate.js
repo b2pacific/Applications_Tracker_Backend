@@ -1,5 +1,9 @@
 const User = require("../models/user");
-const { httpStatus403, httpStatus500 } = require("./httpResponse");
+const {
+  httpStatus403,
+  httpStatus500,
+  httpStatus404,
+} = require("./httpResponse");
 
 let authenticate = async (req, res, next) => {
   try {
@@ -10,9 +14,7 @@ let authenticate = async (req, res, next) => {
     else {
       let token = req.headers.authorization;
       if (token == "") {
-        return res
-          .status(404)
-          .json({ message: "Token missing.", success: false });
+        return res.status(404).json(httpStatus404("Token missing"));
       } else {
         User.findByToken(token, User, (err, user) => {
           if (err) {
