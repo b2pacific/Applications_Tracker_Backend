@@ -27,9 +27,17 @@ const httpStatus403 = (message) => {
   };
 };
 
+const httpStatus404 = (message) => {
+  return {
+    message: message || "Not Found",
+    success: false,
+  };
+};
+
 module.exports = {
   httpStatus200,
   httpStatus500,
   httpStatus403,
   httpStatus304,
+  httpStatus404,
 };
