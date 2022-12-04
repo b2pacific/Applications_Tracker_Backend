@@ -10,14 +10,23 @@ require("./config/db.js");
 
 const loginRouter = require("./routes/login");
 const accessTokenRouter = require("./routes/accessToken");
+const userRouter = require("./routes/user");
+
 const authenticate = require("./utils/authenticate.js");
+const { PORT } = require("./utils/constants.js");
+
+app.get("/", (req, res) => {
+  return res.status(200).json(req.headers);
+});
 
 app.get("/test", authenticate, (req, res) => {
   return res.status(200).json({ message: "Working" });
 });
+
 app.use("/login", loginRouter);
 app.use("/accessToken", accessTokenRouter);
+app.use("/user", userRouter);
 
-app.listen(4000, () => {
-  console.log(`Server started on 3000`);
+app.listen(PORT ? PORT : 4000, () => {
+  console.log(`Server started on ${PORT ? PORT : 4000}`);
 });
